@@ -42,17 +42,19 @@ export class HomeComponent implements OnInit
         let post = this.dataset.hits[i]._source;
         this.childSource.push(post);
       }
-      //console.log(this.childSource);
+      // console.log(this.childSource);
+      // console.log(this.dataset.hits);
+      // console.log(this.childSource.length);
       setTimeout(() => this.flag2 = true, 2000);
       if(this.childSource.length > 0)
       {
         //console.log("Initialsing Child Grid");
         this.childGrid =
         {
-          dataSource: this.childSource,
-          queryString: "State",
+          dataSource: this.displayDataset,
+          queryString: "_id",
           columns: [
-              { field: "Arriving_From_City", headerText: "Arriving From City", width: "200"},
+              { field: "Arriving From City", headerText: "Arriving From City", width: "200"},
               { field: "Arriving From City Updated", headerText: "Arriving From City Updated", width: "200"},
               { field: "Daily Symptom Count", headerText: "Daily Symptom Count", width: "200"},
               { field: "Date of Last Contact", headerText: "Date of Last Contact", width: "200"},
@@ -75,6 +77,7 @@ export class HomeComponent implements OnInit
               { field: "TrendDay No", headerText: "TrendDay No", width: "200"},
               { field: "TrendMonth", headerText: "TrendMonth", width: "200"},
           ],
+
         };
         //console.log(this.childGrid);
         //console.log(this.childSource);
@@ -85,6 +88,7 @@ export class HomeComponent implements OnInit
   onClick(): void
   {
     console.log("Clicked");
+    //console.log(this.displayDataset);
     while(this.count-- && this.pos < this.dataset.hits.length)
     {
       (this.grid.dataSource as object[]).unshift(this.dataset.hits[this.pos]);
@@ -92,6 +96,16 @@ export class HomeComponent implements OnInit
     }
     this.grid.refresh();
     this.count = 5;
+
+    console.log(this.displayDataset);
+    for(var i = 0; i < this.displayDataset.length; i++)
+    {
+      for(var key in this.childSource[i])
+      {
+        this.displayDataset[i][key] = this.childSource[i][key];
+      }
+    }
+    console.log(this.displayDataset);
   }
 
   ngOnInit()
