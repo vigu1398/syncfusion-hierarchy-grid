@@ -119,6 +119,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "syncfusion-api"
+    }
+  },
+  "defaultProject": "syncfusion-api",
+  "cli": {
+    "analytics": "904c7270-cc16-49a8-a968-0e32d8430dab"
+  }
 }

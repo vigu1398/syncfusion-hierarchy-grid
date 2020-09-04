@@ -1,0 +1,8 @@
+{
+  "/":
+  {
+      "target": "https://poc1.cdfi.co.in/api/elasticsearch",
+      "secure": true,
+      "changeOrigin": true
+  }
+}

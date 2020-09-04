@@ -1,0 +1,13 @@
+<div class='div-button'>
+  <button ejs-button (click)='onClick()' cssClass='e-info'>Load 5 Records</button>
+</div>
+
+  <ejs-grid #grid [dataSource]='displayDataset' [childGrid]='childGrid' allowPaging='true'>
+    <e-columns>
+      <e-column field="_id" headerText="ID" textAlign="Left"></e-column>
+      <e-column field="_index" headerText="Index" textAlign="Left"></e-column>
+      <e-column field="_source" headerText="Source" textAlign="Left"></e-column>
+      <e-column field="_score" headerText="Score" textAlign="Left"></e-column>
+      <e-column field="_type" headerText="Type" textAlign="Left"></e-column>
+    </e-columns>
+  </ejs-grid>
