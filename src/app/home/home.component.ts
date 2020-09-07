@@ -49,13 +49,14 @@ export class HomeComponent implements OnInit
       if(this.childSource.length > 0)
       {
         //console.log("Initialsing Child Grid");
+        //console.log(this.displayDataset);
         this.childGrid =
         {
           dataSource: this.displayDataset,
           queryString: "_id",
           columns: [
-              { field: "Arriving From City", headerText: "Arriving From City", width: "200"},
-              { field: "Arriving From City Updated", headerText: "Arriving From City Updated", width: "200"},
+              { field: "Arriving From  City ", headerText: "Arriving From City", width: "200"},
+              { field: "Arriving From  City  Updated", headerText: "Arriving From City Updated", width: "200"},
               { field: "Daily Symptom Count", headerText: "Daily Symptom Count", width: "200"},
               { field: "Date of Last Contact", headerText: "Date of Last Contact", width: "200"},
               { field: "Destination in Meghalaya with Address", headerText: "Destination in Meghalaya with Address", width: "200"},
@@ -97,12 +98,13 @@ export class HomeComponent implements OnInit
     this.grid.refresh();
     this.count = 5;
 
-    console.log(this.displayDataset);
+    //console.log(this.displayDataset);
     for(var i = 0; i < this.displayDataset.length; i++)
     {
       for(var key in this.childSource[i])
       {
         this.displayDataset[i][key] = this.childSource[i][key];
+        console.log(key);
       }
     }
     console.log(this.displayDataset);
