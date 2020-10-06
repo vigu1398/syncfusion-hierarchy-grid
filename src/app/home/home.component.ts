@@ -1,29 +1,42 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ApiCallsService } from '../api-calls.service';
 import { HttpClient } from '@angular/common/http';
-import { DetailRowService } from '@syncfusion/ej2-angular-grids';
-import { PageService } from '@syncfusion/ej2-angular-grids';
-import { SelectionService, GridComponent } from '@syncfusion/ej2-angular-grids';
-import { VirtualScrollService } from "@syncfusion/ej2-angular-grids";
+import { FilterService, GridComponent, PdfExportProperties } from '@syncfusion/ej2-angular-grids';
+import { ClickEventArgs } from '@syncfusion/ej2-navigations'
+import { ChangeEventArgs } from '@syncfusion/ej2-angular-dropdowns';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
+  providers: [FilterService],
+  encapsulation: ViewEncapsulation.None
 })
 export class HomeComponent implements OnInit
 {
-  count = 5;
+  col = 0;
+  width = 200;
+  columnItem: object;
+  childColumnSource = [];
+  keysArray = [];
+  columnSource = [];
+  count = 100000;
   pos = 0;
   childGrid: any;
   childSource: any = [];
   flag1: boolean = false;
   flag2: boolean = false;
   buttonFlag: boolean = false;
+  public toolbar1: string[];
+  public toolbar: string[];
   public initialPage: Object;
   dataset: any;
   displayDataset: any = [];
   @ViewChild('grid') public grid: GridComponent;
+  flag3: boolean;
+  lines: string;
+  ddlfields: { text: string; value: string; };
+  d1data: { id: string; type: string; }[];
 
   constructor(private httpClient: HttpClient, private apiCallsService: ApiCallsService)
   {
@@ -32,61 +45,46 @@ export class HomeComponent implements OnInit
 
   getPosts(): any
   {
-    let obs = this.httpClient.get("https://poc1.cdfi.co.in/api/elasticsearch");
+    this.columnSource = [""];
+    let obs = this.httpClient.get("https://poc.cdfi.co.in/api/elasticsearch");
     obs.subscribe((response) =>
     {
+
+      for(var key in response["hits"][0]._source)
+      {
+        console.log(key);
+        this.childColumnSource.push(
+        {
+          "field": key,
+          "headerText": key,
+          "width": this.width
+        });
+      }
+
+      console.log(this.childColumnSource);
+      this.columnSource = Object.keys(response["hits"][0]);
+      this.flag3 = true;
+
       this.dataset = response;
-      setTimeout(() => this.flag1 = true , 2000);
       for(let i = 0; i < this.dataset.hits.length; i++)
       {
         let post = this.dataset.hits[i]._source;
         this.childSource.push(post);
       }
-      // console.log(this.childSource);
-      // console.log(this.dataset.hits);
-      // console.log(this.childSource.length);
       setTimeout(() => this.flag2 = true, 2000);
       if(this.childSource.length > 0)
       {
-        //console.log("Initialsing Child Grid");
-        //console.log(this.displayDataset);
         this.childGrid =
         {
           dataSource: this.displayDataset,
           queryString: "_id",
-          columns: [
-              { field: "Arriving From  City ", headerText: "Arriving From City", width: "200"},
-              { field: "Arriving From  City  Updated", headerText: "Arriving From City Updated", width: "200"},
-              { field: "Daily Symptom Count", headerText: "Daily Symptom Count", width: "200"},
-              { field: "Date of Last Contact", headerText: "Date of Last Contact", width: "200"},
-              { field: "Destination in Meghalaya with Address", headerText: "Destination in Meghalaya with Address", width: "200"},
-              { field: "District", headerText: "District", width: "200"},
-              { field: "District_for_GPS", headerText: "District_for_GPS", width: "200"},
-              { field: "Family Daily Symptom Count", headerText: "Family Daily Symptom Count", width: "200"},
-              { field: "Legit Contact", headerText: "Legit Contact", width: "200"},
-              { field: "Name", headerText: "Name", width: "200"},
-              { field: "No of Records", headerText: "No of Records", width: "200"},
-              { field: "PK", headerText: "PK", width: "200"},
-              { field: "Registration Date", headerText: "Registration Date", width: "200"},
-              { field: "Source", headerText: "Source", width: "200"},
-              { field: "State", headerText: "State", width: "200"},
-              { field: "SuspectPhoneNo", headerText: "Suspect Phone Number", width: "200"},
-              { field: "SuspectPhoneNo 10Digit", headerText: "SuspectPhoneNo 10Digit", width: "200"},
-              { field: "TrendDate", headerText: "Trend Date", width: "200"},
-              { field: "TrendDateStr", headerText: "TrendDateStr", width: "200"},
-              { field: "TrendDay", headerText: "TrendDay", width: "200"},
-              { field: "TrendDay No", headerText: "TrendDay No", width: "200"},
-              { field: "TrendMonth", headerText: "TrendMonth", width: "200"},
-          ],
-
+          columns: this.childColumnSource
         };
-        //console.log(this.childGrid);
-        //console.log(this.childSource);
       }
     });
   }
 
-  onClick(): void
+  Load(): void
   {
     console.log("Clicked");
     //console.log(this.displayDataset);
@@ -96,7 +94,7 @@ export class HomeComponent implements OnInit
       this.pos++;
     }
     this.grid.refresh();
-    this.count = 5;
+    this.count = 100000;
 
     //console.log(this.displayDataset);
     for(var i = 0; i < this.displayDataset.length; i++)
@@ -104,15 +102,79 @@ export class HomeComponent implements OnInit
       for(var key in this.childSource[i])
       {
         this.displayDataset[i][key] = this.childSource[i][key];
-        console.log(key);
       }
     }
-    console.log(this.displayDataset);
+
+    this.flag2 = false;
   }
+
 
   ngOnInit()
   {
-    this.initialPage = { pageSizes: true, pageCount: 4 };
+    this.columnItem = {field: "", headerText: "", width: this.width};
+    this.toolbar = ['Print', 'PdfExport', 'Search', 'ExcelExport', 'ColumnChooser'];
+    this.lines = 'Vertical';
+    this.ddlfields = { text: 'type' , value: 'id'};
+    this.d1data= [{ id: 'Horizontal', type: 'Horizontal' },
+                  { id: 'Vertical', type: 'Vertical' },
+                  { id: 'Both', type: 'Both' },
+                  { id: 'None', type: 'None' }];
     this.getPosts();
+
+    // this.childColumnSource =  [
+    //   { field: "agebracket", headerText: "Age Bracket", width: "200"},
+    //   { field: "contractedfromwhichpatientsuspected", headerText: "contractedfromwhichpatientsuspected", width: "200"},
+    //   { field: "currentstatus", headerText: "currentstatus", width: "200"},
+    //   { field: "dateannounced", headerText: "dateannounced", width: "200"},
+    //   { field: "detectedcity", headerText: "detectedcity", width: "200"},
+    //   { field: "detecteddistrict", headerText: "detecteddistrict", width: "200"},
+    //   { field: "detectedstate", headerText: "detectedstate", width: "200"},
+    //   { field: "entryid", headerText: "entryid", width: "200"},
+    //   { field: "gender", headerText: "gender", width: "200"},
+    //   { field: "nationality", headerText: "nationality", width: "200"},
+    //   { field: "notes", headerText: "notes", width: "200"},
+    //   { field: "numcases", headerText: "numcases", width: "200"},
+    //   { field: "patientnumber", headerText: "patientnumber", width: "200"},
+    //   { field: "source1", headerText: "source1", width: "200"},
+    //   { field: "source2", headerText: "source2", width: "200"},
+    //   { field: "source3", headerText: "source3", width: "200"},
+    //   { field: "statecode", headerText: "statecode", width: "200"},
+    //   { field: "statepatientnumber", headerText: "statepatientnumber", width: "200"},
+    //   { field: "statuschangedate", headerText: "statuschangedate", width: "200"},
+    //   { field: "typeoftransmission", headerText: "typeoftransmission", width: "200"},
+    //   { field: "path_id", headerText: "path_id", width: "200"},
+    //   { field: "url", headerText: "url", width: "200"},
+    //   { field: "Lockdown Phases", headerText: "Lockdown Phases", width: "200"},
+    //   { field: "detectedstate_corrected", headerText: "detectedstate_corrected", width: "200"},
+    //   { field: "Primary_Key", headerText: "Primary_Key", width: "200"},
+    //   { field: "Announced Month", headerText: "Announced Month", width: "200"},
+    //   { field: "Announced Day", headerText: "Announced Day", width: "200"},
+    //   { field: "Announced Date LOV", headerText: "Announced Date LOV", width: "200"},
+    //   { field: "Country", headerText: "Country", width: "200"},
+    //   { field: "Source_file", headerText: "Source_file", width: "200"},
+    // ]
   }
+
+  toolbarClick(args: ClickEventArgs) 
+  {
+    console.log("Click Event");
+    if (args.item.text === 'PDF Export') 
+    {
+      this.grid.pdfExport({hierarchyExportMode: 'All'});
+    }
+
+    if(args.item.text == 'Excel Export')
+    {
+      this.grid.excelExport({hierarchyExportMode: 'All'});
+    }
+  }
+
+    //Handling grid lines change and reflection it back to the tree grid
+    change (e: ChangeEventArgs) : void 
+    {
+      let lines: any = <string>e.value;
+      this.grid.gridLines = lines;
+      this.grid.refresh();
+    }
+
 }

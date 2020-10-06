@@ -1,0 +1,38 @@
+<div *ngIf = "flag1" class = "container">
+    <ejs-treegrid 
+    #treegrid
+    [dataSource]='displayDataset' 
+    [treeColumnIndex]='0' 
+    [allowSorting]="true"
+    enableHover='true' 
+    childMapping='subtask'  
+    (queryCellInfo)='queryCellInfo($event)'  
+    allowFiltering='true' 
+    [toolbar]='toolbar'
+    [searchSettings]='searchSettings' 
+    allowExcelExport='true' 
+    allowPdfExport='true'
+    allowTextWrap='true'
+    allowReordering='true'
+    allowSorting='true' 
+    [allowResizing]=true
+    (toolbarClick)='toolbarClick($event)'
+    [showColumnChooser]='true'
+    [enableVirtualization]='400'
+    height='600'>
+
+        <!-- Dynamically inititalizing column fields from the columnSource array -->
+        <e-columns>
+            <ng-template ngFor let-column [ngForOf]="columnSource"> 
+                <e-column [field]="column"  [headerText]="column" [width] = "200" > 
+                    </e-column> 
+              </ng-template>
+        </e-columns>
+    </ejs-treegrid>
+</div>
+
+<!-- A dropdown for the grid lines-->
+
+<div id="grid-lines-dd">
+    <ejs-dropdownlist #dropdown1 id='ddlelement' width= '100px' [dataSource]='d1data' [fields]='ddlfields' value='Vertical' (change)="change($event)"></ejs-dropdownlist>
+</div>

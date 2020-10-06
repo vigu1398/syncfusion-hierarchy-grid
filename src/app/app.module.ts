@@ -1,21 +1,29 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
-import { GridModule } from '@syncfusion/ej2-angular-grids';
+import { FreezeService, GridModule, ReorderService, SortService } from '@syncfusion/ej2-angular-grids';
 import { DetailRowService } from '@syncfusion/ej2-angular-grids';
-import { PageService } from '@syncfusion/ej2-angular-grids';
-//import { HttpClientJsonpModule } from '@angular/common/http';
+import { TreeGridModule } from '@syncfusion/ej2-angular-treegrid';
 import { VirtualScrollService } from "@syncfusion/ej2-angular-grids";
-
+import { PageService} from '@syncfusion/ej2-angular-treegrid';
+import { AggregateService } from '@syncfusion/ej2-angular-grids';
+import { ToolbarService } from '@syncfusion/ej2-angular-grids';
+import { InfiniteScrollService} from '@syncfusion/ej2-angular-grids';
+import { ExcelExportService, PdfExportService,GroupService, FilterService, ResizeService, ColumnChooserService} from '@syncfusion/ej2-angular-grids';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
+import { TreeComponent } from './tree/tree.component';
+import { NavbarComponent } from './navbar/navbar.component';
+import { DropDownListModule} from '@syncfusion/ej2-angular-dropdowns';
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    TreeComponent,
+    NavbarComponent
   ],
   imports: [
     BrowserModule,
@@ -23,8 +31,10 @@ import { HomeComponent } from './home/home.component';
     GridModule,
     //HttpClientJsonpModule
     HttpClientModule,
+    TreeGridModule,
+    DropDownListModule,
   ],
-  providers: [DetailRowService, PageService, VirtualScrollService],
+  providers: [FreezeService, ReorderService, ResizeService, FilterService, ColumnChooserService, ExcelExportService, PdfExportService, DetailRowService,GroupService, PageService, VirtualScrollService, SortService, FilterService, AggregateService, ToolbarService, InfiniteScrollService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
